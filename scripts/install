@@ -147,7 +147,7 @@ pushd $final_path/$app
 
 	# We generate a dummy password ... this will actually *not* be used because the admin is supposed to connect via the ldap
 	password=$(ynh_string_random --length=30)
-	sudo -u "$app" MIX_ENV=prod mix mobilizon.users.new "$admin_email" --admin --password "$password"
+	sudo -u "$app" ./bin/mobilizon-ctl "$admin_email" --admin --password "$password"
 popd
 
 #=================================================
