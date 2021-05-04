@@ -10,7 +10,6 @@ ExecStop=__FINALPATH__/__APP__/bin/mobilizon stop
 KillMode=process
 Restart=on-failure
 Environment=MIX_ENV=prod
-Environment=MOBILIZON_CONFIG_PATH=/etc/mobilizon/__APP__.exs
 
 SyslogIdentifier=mobilizon
 
