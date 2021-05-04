@@ -144,7 +144,6 @@ chown -R mobilizon /var/lib/mobilizon
 
 # Give permission to the final_path
 chown -R "$app":"$app" "$final_path"
-chmod 644 $config
 config="/etc/mobilizon/config.exs"
 chmod 644 $config
 chown mobilizon: $config
