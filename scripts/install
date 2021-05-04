@@ -139,7 +139,7 @@ yunohost user update ${app}_notifs --add-mailalias $app@$domain --add-mailforwar
 # MAKE SETUP
 #=================================================
 ynh_script_progression --message="Install App" --weight=5
-
+export MOBILIZON_CONFIG_PATH=/etc/mobilizon/${app}.exs
 mkdir -p /var/lib/mobilizon/uploads /var/lib/mobilizon/data
 chown -R mobilizon /var/lib/mobilizon
 
