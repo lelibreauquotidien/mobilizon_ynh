@@ -5,11 +5,12 @@ After=network.target postgresql.service
 [Service]
 User=__APP__
 WorkingDirectory=__FINALPATH__/__APP__/
-ExecStart=/usr/bin/env mix phx.server
-ExecReload=/bin/kill $MAINPID
+ExecStart=__FINALPATH__/__APP__/bin/mobilizon start
+ExecStop=__FINALPATH__/__APP__/bin/mobilizon stop
 KillMode=process
 Restart=on-failure
 Environment=MIX_ENV=prod
+Environment=MOBILIZON_CONFIG_PATH=/etc/mobilizon/__APP__.exs
 
 SyslogIdentifier=mobilizon
 

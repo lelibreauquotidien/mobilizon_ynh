@@ -65,7 +65,7 @@ ynh_app_setting_set --app=$app --key=ynh_user_password --value=$ynh_user_passwor
 ynh_script_progression --message="Finding an available port..."
 
 # Find an available port
-port=$(ynh_find_port --port=8095)
+port=$(ynh_find_port --port=4000)
 ynh_app_setting_set --app=$app --key=port --value=$port
 
 #=================================================
@@ -77,10 +77,7 @@ ynh_install_app_dependencies $pkg_dependencies
 #=================================================
 # INSTALL EXTRA DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Installing extra dependencies ..."
 
-lsb_name="$(lsb_release --codename --short)"
-ynh_install_extra_app_dependencies --repo="deb http://packages.erlang-solutions.com/debian $lsb_name contrib" --package="$extra_pkg_dependencies" --key='https://packages.erlang-solutions.com/debian/erlang_solutions.asc'
 #=================================================
 # CREATE A POSTGRESQL DATABASE
 #=================================================
@@ -116,6 +113,13 @@ ynh_script_progression --message="Configuring nginx web server..."
 ynh_add_nginx_config
 
 #=================================================
+# MOBILIZON CONFIGURATION
+#=================================================
+mkdir -p /etc/mobilizon
+ynh_add_config --template="../conf/mobilizon.exs" --destination="/etc/mobilizon/$app.exs"
+ynh_replace_string --match_string=__RANDOM__ --replace_string=$(ynh_string_random --length=64) --target_file="$config"
+
+#=================================================
 # CREATE DEDICATED USER
 #=================================================
 ynh_script_progression --message="Configuring system user..."
@@ -126,6 +130,7 @@ ynh_system_user_create --username=$app --home_dir=$final_path
 yunohost user create ${app}_notifs --firstname "Mobilizon" --lastname "Notifications" --mail ${app}_notifs@$domain --password "$ynh_user_password" -q 0
 yunohost user update ${app}_notifs --add-mailalias $app@$domain --add-mailforward $admin_email
 
+
 #=================================================
 # SPECIFIC SETUP
 #=================================================
@@ -133,24 +138,25 @@ yunohost user update ${app}_notifs --add-mailalias $app@$domain --add-mailforwar
 #=================================================
 ynh_script_progression --message="Install App" --weight=5
 
+mkdir -p /var/lib/mobilizon/uploads /var/lib/mobilizon/data
+chown -R mobilizon /var/lib/mobilizon
+
 # Give permission to the final_path
 chown -R "$app":"$app" "$final_path"
 
-config="$final_path/$app/config.exs"
+config="/etc/mobilizon/$app.exs"
 
 cat "../conf/ldap.exs" >> "$config"
 cat "../conf/mail.exs" >> "$config"
-
+sudo -u mobilizon ./bin/mobilizon_ctl migrate
 pushd $final_path/$app
 	chmod o-rwx $config
 	ynh_replace_string --match_string="__YNH_USER__" --replace_string="${app}_notifs" --target_file="$config"
 	ynh_replace_string --match_string="__YNH_USER_PASSWORD__" --replace_string="${ynh_user_password}" --target_file="$config"
 
-	ynh_secure_remove --file="/tmp/setup_db.psql"
-
 	# We generate a dummy password ... this will actually *not* be used because the admin is supposed to connect via the ldap
 	password=$(ynh_string_random --length=30)
-sudo -u "$app" MIX_ENV=prod mix mobilizon.users.new "$admin_email" --admin --password "$password"
+sudo -u "$app" ./bin/mobilizon_ctl "$admin_email" --admin --password "$password"
 popd
 
 #=================================================
