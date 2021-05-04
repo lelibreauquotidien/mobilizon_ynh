@@ -149,9 +149,8 @@ config="/etc/mobilizon/config.exs"
 
 cat "../conf/ldap.exs" >> "$config"
 cat "../conf/mail.exs" >> "$config"
-sudo -u mobilizon ${final_path}/${app}/bin/mobilizon_ctl migrate
-
-	chmod o-rwx $config
+sudo -u mobilizon ./bin/mobilizon_ctl migrate
+	cd ${final_path}/${app}
 	ynh_replace_string --match_string="__YNH_USER__" --replace_string="${app}_notifs" --target_file="$config"
 	ynh_replace_string --match_string="__YNH_USER_PASSWORD__" --replace_string="${ynh_user_password}" --target_file="$config"
 
