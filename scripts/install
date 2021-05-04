@@ -117,8 +117,11 @@ ynh_add_nginx_config
 #=================================================
 mkdir -p /etc/mobilizon
 ynh_add_config --template="../conf/mobilizon.exs" --destination="/etc/mobilizon/$app.exs"
-ynh_replace_string --match_string=__RANDOM__ --replace_string="$(ynh_string_random --length=64)" --target_file="$config"
 
+secret_key_base=$(ynh_string_random --length=64)
+secret_key=$(ynh_string_random --length=63)
+ynh_replace_string --match_string="__SECRET_KEY_BASE__" --replace_string="$secret_key_base" --target_file="$config"
+ynh_replace_string --match_string="__SECRET_KEY__" --replace_string="$secret_key" --target_file="$config"
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
