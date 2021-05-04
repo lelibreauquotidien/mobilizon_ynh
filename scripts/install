@@ -150,7 +150,7 @@ config="/etc/mobilizon/$app.exs"
 
 cat "../conf/ldap.exs" >> "$config"
 cat "../conf/mail.exs" >> "$config"
-sudo -u mobilizon /var/www/${app}/bin/mobilizon_ctl migrate
+sudo -u mobilizon ${final_path}/${app}/bin/mobilizon_ctl migrate
 pushd $final_path/$app
 	chmod o-rwx $config
 	ynh_replace_string --match_string="__YNH_USER__" --replace_string="${app}_notifs" --target_file="$config"
@@ -158,7 +158,7 @@ pushd $final_path/$app
 
 	# We generate a dummy password ... this will actually *not* be used because the admin is supposed to connect via the ldap
 	password=$(ynh_string_random --length=30)
-sudo -u "$app" /var/www/${app}/bin/mobilizon_ctl "$admin_email" --admin --password "$password"
+sudo -u "$app" ${final_path}/${app}/bin/mobilizon_ctl "$admin_email" --admin --password "$password"
 popd
 
 #=================================================
