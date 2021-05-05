@@ -136,6 +136,23 @@ yunohost user update ${app}_notifs --add-mailalias $app@$domain --add-mailforwar
 #=================================================
 # SPECIFIC SETUP
 #=================================================
+#=================================================
+# SETUP SYSTEMD
+#=================================================
+ynh_script_progression --message="Configuring a systemd service..."
+
+# Create a dedicated systemd config
+ynh_add_systemd_config
+
+#=================================================
+# STORE THE CONFIG FILE CHECKSUM
+#=================================================
+ynh_script_progression --message="Storing the config file checksum..."
+
+# Calculate and store the config file checksum into the app settings
+ynh_store_file_checksum --file="$config"
+
+#=================================================
 # MAKE SETUP
 #=================================================
 ynh_script_progression --message="Install App" --weight=5
@@ -157,22 +174,6 @@ sudo -u mobilizon ./bin/mobilizon_ctl migrate
 	# We generate a dummy password ... this will actually *not* be used because the admin is supposed to connect via the ldap
 	password=$(ynh_string_random --length=30)
 # sudo -u "$app" ${final_path}/${app}/bin/mobilizon_ctl "$admin_email" --admin --password "$password"
-
-#=================================================
-# SETUP SYSTEMD
-#=================================================
-ynh_script_progression --message="Configuring a systemd service..."
-
-# Create a dedicated systemd config
-ynh_add_systemd_config
-
-#=================================================
-# STORE THE CONFIG FILE CHECKSUM
-#=================================================
-ynh_script_progression --message="Storing the config file checksum..."
-
-# Calculate and store the config file checksum into the app settings
-ynh_store_file_checksum --file="$config"
 
 #=================================================
 # GENERIC FINALIZATION
