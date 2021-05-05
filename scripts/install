@@ -156,7 +156,7 @@ sudo -u mobilizon ./bin/mobilizon_ctl migrate
 
 	# We generate a dummy password ... this will actually *not* be used because the admin is supposed to connect via the ldap
 	password=$(ynh_string_random --length=30)
-sudo -u "$app" ${final_path}/${app}/bin/mobilizon_ctl "$admin_email" --admin --password "$password"
+# sudo -u "$app" ${final_path}/${app}/bin/mobilizon_ctl "$admin_email" --admin --password "$password"
 
 #=================================================
 # SETUP SYSTEMD
